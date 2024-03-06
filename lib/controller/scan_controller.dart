@@ -77,6 +77,7 @@ class ScanController extends GetxController {
     );
 
     if (detector != null) {
+      print("Detector is null");
       var ourDetectedObject = detector.first;
       if (ourDetectedObject['confidenceInClass'] * 100 > 45) {
         label = ourDetectedObject['detectedClass'].toString();
@@ -87,6 +88,8 @@ class ScanController extends GetxController {
       }
       update();
       print("Result is $detector");
+    } else {
+      print("No object detected");
     }
   }
 }
