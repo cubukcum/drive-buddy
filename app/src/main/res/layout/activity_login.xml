@@ -97,6 +97,7 @@
         android:inputType="textEmailAddress"
         android:padding="20dp"
         android:textColorHint="@color/background"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2"  android:background="@drawable/edit_text_border" />
@@ -115,6 +116,7 @@
         android:inputType="textPassword"
         android:padding="20dp"
         android:textColorHint="@color/background"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
