@@ -16,4 +16,9 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, CameraActivity::class.java)
         startActivity(intent)
     }
+    fun onButtonClickedDistance(view: View) {
+        // Yol kayıt tuşuna basılınca RoadDetectionActivity'e yönlendirme
+        val intent = Intent(this, RoadDetectionActivity::class.java)
+        startActivity(intent)
+    }
 }

@@ -52,6 +52,7 @@
         android:textStyle="bold"
         android:padding="10dp"
         android:background="@color/green"
+        android:onClick="onButtonClickedDistance" />
      />
 
     <Button

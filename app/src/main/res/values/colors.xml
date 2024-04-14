@@ -12,7 +12,6 @@
     <color name="textColor">#689481</color>
     <color name="buttonColor">#01562E</color>
     <color name="secondButtonColor">#DFEAE4</color>
-
-
+    <color name="bounding_box_color">#234567</color>
 
 </resources>
