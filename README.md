@@ -1,12 +1,11 @@
 # Drive Buddy
 
-## Getting Started
+"Drive Buddy" project is a mobile application aimed at increasing driver safety and enhancing driving experience. 
+This application instantly alerts users by detecting risky situations such as lane departure or approaching vehicles 
+using deep learning models. Additionally, it combines various features drivers need such as dashcam recording, 
+drowsiness detection, map support, and traffic sign recognition into one application. Thus, drivers can make their 
+vehicles smarter and ensure a safe journey through the "Drive Buddy" app, which they can download to their own phones.
 
-This project is a starting point for a Flutter application.
+## Screenshots
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-will update here soon...
+![App Screenshots](./app/src/main/assets/Screenshots.png)
