@@ -44,6 +44,18 @@
         <activity
             android:name=".RoadDetectionActivity"
             android:exported="false" />
+        <activity
+            android:name=".LaneDetectionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".WeaponDetectionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SignDetectionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DrowsinessClassificationActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

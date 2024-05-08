@@ -23,7 +23,9 @@
         android:textSize="18sp"
         android:textStyle="bold"
         android:padding="10dp"
-        android:background="#FF5733" />
+        android:background="#FF5733"
+        android:onClick="onButtonClickedDistance2" />
+        />
 
     <Button
 
@@ -39,7 +41,9 @@
         android:textSize="18sp"
         android:textStyle="bold"
         android:background="#9C27B0"
-        />
+        android:onClick="onButtonClickedDistance3" />
+
+    />
 
     <Button
         android:id="@+id/button3"
@@ -70,7 +74,8 @@
         android:textStyle="bold"
         android:padding="10dp"
         android:background="@color/blue"
-  />
+        android:onClick="onButtonClickedDistance2" />
+    />
 
     <Button
         android:id="@+id/button5"
@@ -86,6 +91,7 @@
         android:textStyle="bold"
         android:padding="10dp"
         android:background="#E91E63"
+        android:onClick="onButtonClickedDistance4" />
        />
 
     <Button
