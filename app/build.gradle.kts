@@ -54,11 +54,16 @@ dependencies {
     implementation("org.tensorflow:tensorflow-lite-gpu:2.3.0")
     implementation("org.tensorflow:tensorflow-lite:2.14.0")
     implementation("org.tensorflow:tensorflow-lite-support:0.4.4")
+    implementation("org.tensorflow:tensorflow-lite-task-vision:+")
+
+//    implementation("org.openpnp:opencv:4.5.1-2")
+    implementation("com.quickbirdstudios:opencv:3.4.15")
+    implementation("org.apache.commons:commons-math3:3.6.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.2")
 
     implementation("androidx.media3:media3-exoplayer:1.3.1")
     implementation("androidx.media3:media3-exoplayer-dash:1.3.1")
     implementation("androidx.media3:media3-ui:1.3.1")
-
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
