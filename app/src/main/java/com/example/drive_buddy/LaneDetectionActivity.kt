@@ -1,5 +1,4 @@
-package com.os.cvCamera
-
+package com.example.drive_buddy
 
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
@@ -11,10 +10,9 @@ import android.util.TypedValue
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.view.get
-import com.os.cvCamera.BuildConfig.GIT_HASH
-import com.os.cvCamera.BuildConfig.VERSION_NAME
-import com.os.cvCamera.databinding.ActivityMainBinding
-import
+import com.example.drive_buddy.databinding.ActivityLaneDetectionBinding
+import com.example.drive_buddy.Constants.GIT_HASH
+import com.example.drive_buddy.Constants.VERSION_NAME
 import org.opencv.android.CameraActivity
 import org.opencv.android.CameraBridgeViewBase.CAMERA_ID_BACK
 import org.opencv.android.CameraBridgeViewBase.CAMERA_ID_FRONT
@@ -34,9 +32,9 @@ import org.apache.commons.math3.fitting.PolynomialCurveFitter
 import org.apache.commons.math3.fitting.WeightedObservedPoints
 
 
-class MainActivity : CameraActivity(), CvCameraViewListener2 {
+class LaneDetectionActivity : CameraActivity(), CvCameraViewListener2 {
 
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityLaneDetectionBinding
     private lateinit var mRGBA: Mat
     private lateinit var mRGBAT: Mat
     private var mCameraId: Int = CAMERA_ID_BACK
@@ -55,15 +53,13 @@ class MainActivity : CameraActivity(), CvCameraViewListener2 {
         }
     }
 
-    private external fun openCVVersion(): String?
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Timber.d("OpenCV Version: $OPENCV_VERSION")
 
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityLaneDetectionBinding.inflate(layoutInflater)
         setContentView(binding.root)
         mCameraManager = getSystemService(CAMERA_SERVICE) as CameraManager
 
@@ -74,10 +70,9 @@ class MainActivity : CameraActivity(), CvCameraViewListener2 {
         findFlashLight()
 
         // Load buttonConfigs
-        configButtons()
-
+        setButtonColors();
         // Load button colors
-        setButtonColors()
+configButtons();
 
     }
 
@@ -101,49 +96,13 @@ class MainActivity : CameraActivity(), CvCameraViewListener2 {
 
                 R.id.about -> {
                     // Get app version and githash from BuildConfig
-                    val cvVer = openCVVersion() // Get OpenCV version from native code
+                    val cvVer =  "openCVVersion()" // Get OpenCV version from native code
                     val toast: Toast = Toast.makeText(
                         this,
                         "CvCamera-Mobile - Version $VERSION_NAME-$GIT_HASH - OpenCV $cvVer ",
                         Toast.LENGTH_SHORT,
                     )
                     toast.show()
-
-                    true
-                }
-
-                R.id.filters -> {
-                    // Toggle between grayscale,toSepia,toPencilSketch,toSobel,toCanny
-                    mFilterId = when (mFilterId) {
-                        -1 -> {
-                            Toast.makeText(this, getString(R.string.grayscale_filter), Toast.LENGTH_SHORT).show()
-                            0
-                        }
-
-                        0 -> {
-                            Toast.makeText(this, getString(R.string.sepia_filter), Toast.LENGTH_SHORT).show()
-                            1
-                        }
-
-                        1 -> {
-                            Toast.makeText(this, getString(R.string.sobel_filter), Toast.LENGTH_SHORT).show()
-                            2
-                        }
-
-                        2 -> {
-                            Toast.makeText(this, getString(R.string.canny_filter), Toast.LENGTH_SHORT).show()
-                            3
-                        }
-
-                        3 -> {
-                            -1
-                        }
-
-                        else -> {
-                            -1
-                        }
-                    }
-
 
                     true
                 }

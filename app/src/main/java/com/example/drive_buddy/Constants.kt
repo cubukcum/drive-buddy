@@ -12,4 +12,12 @@ object Constants {
 //    const val DROWSINESS_MODEL_PATH = "mobilenet_v1_1.0_224_quant.tflite"
 //    const val DROWSINESS_LABELS_PATH = "labels_mobilenet_quant_v1_224.txt"
 
+    const val APPLICATION_ID = "com.os.cvCamera"
+    const val BUILD_TYPE = "debug"
+    const val VERSION_CODE = 1
+    const val VERSION_NAME = "1.0.1"
+
+    // Field from default config.
+    const val GIT_HASH = "a76d351"
+
 }
