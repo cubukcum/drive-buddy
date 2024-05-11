@@ -1,190 +1,306 @@
-package com.example.drive_buddy
+package com.os.cvCamera
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.Matrix
+
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
+import android.hardware.camera2.CameraAccessException
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraManager
 import android.os.Bundle
-import android.util.Log
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
-import androidx.camera.core.AspectRatio
-import androidx.camera.core.Camera
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import com.example.drive_buddy.databinding.ActivityLaneDetectionBinding
-import org.apache.commons.math3.fitting.PolynomialCurveFitter
-import org.apache.commons.math3.fitting.WeightedObservedPoints
-import org.opencv.android.OpenCVLoader
+import android.util.TypedValue
+import android.view.WindowManager
+import android.widget.Toast
+import androidx.core.view.get
+import com.os.cvCamera.BuildConfig.GIT_HASH
+import com.os.cvCamera.BuildConfig.VERSION_NAME
+import com.os.cvCamera.databinding.ActivityMainBinding
+import
+import org.opencv.android.CameraActivity
+import org.opencv.android.CameraBridgeViewBase.CAMERA_ID_BACK
+import org.opencv.android.CameraBridgeViewBase.CAMERA_ID_FRONT
+import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame
+import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2
+import org.opencv.android.OpenCVLoader.OPENCV_VERSION
 import org.opencv.core.Core
+import org.opencv.core.CvType
 import org.opencv.core.Mat
 import org.opencv.core.MatOfPoint
 import org.opencv.core.Point
 import org.opencv.core.Scalar
 import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
+import timber.log.Timber
+import org.apache.commons.math3.fitting.PolynomialCurveFitter
+import org.apache.commons.math3.fitting.WeightedObservedPoints
 
-class LaneDetectionActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityLaneDetectionBinding
-    private val isFrontCamera = false
 
-    private var preview: Preview? = null
-    private var imageAnalyzer: ImageAnalysis? = null
-    private var camera: Camera? = null
-    private var cameraProvider: ProcessCameraProvider? = null
+class MainActivity : CameraActivity(), CvCameraViewListener2 {
 
-    private lateinit var cameraExecutor: ExecutorService
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var mRGBA: Mat
+    private lateinit var mRGBAT: Mat
+    private var mCameraId: Int = CAMERA_ID_BACK
+    private var mTorchCameraId: String = ""
+    private var mTorchState = false
+    private lateinit var mCameraManager: CameraManager
+
+    // Filters id
+    private var mFilterId = -1
+
+
+    companion object {
+        init {
+            System.loadLibrary("opencv_java4")
+            System.loadLibrary("cvcamera")
+        }
+    }
+
+    private external fun openCVVersion(): String?
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        OpenCVLoader.initDebug()
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME)
         super.onCreate(savedInstanceState)
-        binding = ActivityLaneDetectionBinding.inflate(layoutInflater)
+        Timber.d("OpenCV Version: $OPENCV_VERSION")
+
+
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        mCameraManager = getSystemService(CAMERA_SERVICE) as CameraManager
 
+        //
+        loadOpenCVConfigs()
 
-        if (allPermissionsGranted()) {
-            startCamera()
-        } else {
-            ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
+        // Find the flashlight
+        findFlashLight()
+
+        // Load buttonConfigs
+        configButtons()
+
+        // Load button colors
+        setButtonColors()
+
+    }
+
+    private fun setButtonColors() {
+        for (i in 0..<binding.bottomAppBar.menu.size()) {
+            val item = binding.bottomAppBar.menu[i]
+            val typedValue = TypedValue()
+            theme.resolveAttribute(android.R.attr.colorAccent, typedValue, true)
+            item.icon?.colorFilter =
+                PorterDuffColorFilter(typedValue.data, PorterDuff.Mode.SRC_ATOP)
+        }
+    }
+
+    private fun configButtons() {
+        binding.cvCameraChangeFab.setOnClickListener {
+            cameraSwitch()
         }
 
-        cameraExecutor = Executors.newSingleThreadExecutor()
-    }
+        binding.bottomAppBar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
 
-    private fun startCamera() {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-        cameraProviderFuture.addListener({
-            cameraProvider  = cameraProviderFuture.get()
-            bindCameraUseCases()
-        }, ContextCompat.getMainExecutor(this))
-    }
-
-    private fun bindCameraUseCases() {
-        val cameraProvider = cameraProvider ?: throw IllegalStateException("Camera initialization failed.")
-
-        val rotation = binding.viewFinder.display.rotation
-
-        val cameraSelector = CameraSelector
-            .Builder()
-            .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-            .build()
-
-        preview =  Preview.Builder()
-            .setTargetAspectRatio(AspectRatio.RATIO_4_3)
-            .setTargetRotation(rotation)
-            .build()
-
-        imageAnalyzer = ImageAnalysis.Builder()
-            .setTargetAspectRatio(AspectRatio.RATIO_4_3)
-            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-            .setTargetRotation(binding.viewFinder.display.rotation)
-            .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
-            .build()
-
-        imageAnalyzer?.setAnalyzer(cameraExecutor) { imageProxy ->
-            val bitmapBuffer =
-                Bitmap.createBitmap(
-                    imageProxy.width,
-                    imageProxy.height,
-                    Bitmap.Config.ARGB_8888
-                )
-            imageProxy.use { bitmapBuffer.copyPixelsFromBuffer(imageProxy.planes[0].buffer) }
-            imageProxy.close()
-
-            val matrix = Matrix().apply {
-                postRotate(imageProxy.imageInfo.rotationDegrees.toFloat())
-
-                if (isFrontCamera) {
-                    postScale(
-                        -1f,
-                        1f,
-                        imageProxy.width.toFloat(),
-                        imageProxy.height.toFloat()
+                R.id.about -> {
+                    // Get app version and githash from BuildConfig
+                    val cvVer = openCVVersion() // Get OpenCV version from native code
+                    val toast: Toast = Toast.makeText(
+                        this,
+                        "CvCamera-Mobile - Version $VERSION_NAME-$GIT_HASH - OpenCV $cvVer ",
+                        Toast.LENGTH_SHORT,
                     )
+                    toast.show()
+
+                    true
+                }
+
+                R.id.filters -> {
+                    // Toggle between grayscale,toSepia,toPencilSketch,toSobel,toCanny
+                    mFilterId = when (mFilterId) {
+                        -1 -> {
+                            Toast.makeText(this, getString(R.string.grayscale_filter), Toast.LENGTH_SHORT).show()
+                            0
+                        }
+
+                        0 -> {
+                            Toast.makeText(this, getString(R.string.sepia_filter), Toast.LENGTH_SHORT).show()
+                            1
+                        }
+
+                        1 -> {
+                            Toast.makeText(this, getString(R.string.sobel_filter), Toast.LENGTH_SHORT).show()
+                            2
+                        }
+
+                        2 -> {
+                            Toast.makeText(this, getString(R.string.canny_filter), Toast.LENGTH_SHORT).show()
+                            3
+                        }
+
+                        3 -> {
+                            -1
+                        }
+
+                        else -> {
+                            -1
+                        }
+                    }
+
+
+                    true
+                }
+
+                R.id.resizeCanvas -> {
+                    binding.CvCamera.disableView()
+                    binding.CvCamera.setFitToCanvas(!binding.CvCamera.getFitToCanvas())
+                    binding.CvCamera.enableView()
+                    true
+                }
+
+                else -> {
+                    false
                 }
             }
 
-            val rotatedBitmap = Bitmap.createBitmap(
-                bitmapBuffer, 0, 0, bitmapBuffer.width, bitmapBuffer.height,
-                matrix, true
-            )
-
-            // Apply OpenCV processing here
-            val mat = Mat()
-
-            val canny = getEdges(mat)
-            val slice = getSlice(canny)
-            val lines = getLines(slice)
-            val visualized = visualize(mat, lines)
-
-            // Convert the visualized Mat back to Bitmap
-            val processedBitmap = Bitmap.createBitmap(visualized.cols(), visualized.rows(), Bitmap.Config.ARGB_8888)
-
-            // Now you can use the processedBitmap for display or further processing
-        }
-
-
-        cameraProvider.unbindAll()
-
-        try {
-            camera = cameraProvider.bindToLifecycle(
-                this,
-                cameraSelector,
-                preview,
-                imageAnalyzer
-            )
-
-            preview?.setSurfaceProvider(binding.viewFinder.surfaceProvider)
-        } catch(exc: Exception) {
-            Log.e(TAG, "Use case binding failed", exc)
         }
     }
 
-    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
-        ContextCompat.checkSelfPermission(baseContext, it) == PackageManager.PERMISSION_GRANTED
+    private fun cameraSwitch() {
+        mCameraId = if (mCameraId == CAMERA_ID_BACK) {
+            CAMERA_ID_FRONT
+        } else {
+            CAMERA_ID_BACK
+        }
+
+        binding.CvCamera.disableView()
+        binding.CvCamera.setCameraIndex(mCameraId)
+        binding.CvCamera.enableView()
+
     }
 
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()) {
-        if (it[Manifest.permission.CAMERA] == true) { startCamera() }
+
+    private fun loadOpenCVConfigs() {
+        binding.CvCamera.setCameraIndex(mCameraId)
+        binding.CvCamera.setCvCameraViewListener(this)
+        binding.CvCamera.setCameraPermissionGranted()
+        Timber.d("OpenCV Camera Loaded")
+        binding.CvCamera.enableView()
+        binding.CvCamera.getCameraDevice()
+    }
+
+
+    private fun enableFlashLight() {
+        mTorchState = true
+        mCameraManager.setTorchMode(mTorchCameraId, true)
+        Timber.d("Torch is on")
+    }
+
+    private fun findFlashLight() {
+        for (cameraId in mCameraManager.cameraIdList) {
+            try {
+                // Check if the camera has a torchlight
+                val hasTorch = mCameraManager.getCameraCharacteristics(cameraId)
+                    .get(CameraCharacteristics.FLASH_INFO_AVAILABLE) ?: false
+
+                if (hasTorch) {
+                    // Find the ID of the camera that has a torchlight and store it in mTorchCameraId
+                    Timber.d("Torch is available")
+                    Timber.d("Camera Id: $cameraId")
+                    mTorchCameraId = cameraId
+                    mTorchState = false
+                    break
+                } else {
+                    Timber.d("Torch is not available")
+                }
+            } catch (e: CameraAccessException) {
+                // Handle any errors that occur while trying to access the camera
+                Timber.e("CameraAccessException ${e.message}")
+            }
+        }
+    }
+
+    override fun onCameraViewStarted(width: Int, height: Int) {
+        mRGBA = Mat(height, width, CvType.CV_8UC4)
+        mRGBAT = Mat()
+    }
+
+    override fun onCameraViewStopped() {
+        mRGBA.release()
+        mRGBAT.release()
+    }
+
+    override fun onCameraFrame(inputFrame: CvCameraViewFrame?): Mat {
+        return if (inputFrame != null) {
+            val frame = inputFrame.rgba()
+            val filteredFrame = cvFilters(frame)
+            frame.release()
+            filteredFrame
+        } else {
+            // return last or empty frame
+            mRGBA
+        }
+    }
+
+
+    private fun cvFilters(frame: Mat): Mat {
+//        return when (mFilterId) {
+//            0 -> {
+//                frame.getSlice(frame.getEdges())
+//            }
+//
+//            1 -> {
+//                frame.getSlice(frame.getEdges())            }
+//
+//            2 -> {
+//                frame.getSlice(frame.getEdges())            }
+//
+//            3 -> {
+//                frame.getSlice(frame.getEdges())            }
+//
+//            else -> frame
+//        }
+        if (mCameraId == CAMERA_ID_FRONT) {
+            Core.flip(frame, frame, -1)
+        }
+        Timber.i("Size of input frame: ${frame.width()}x${frame.height()}")
+
+        // Get edges
+        val canny = getEdges(frame)
+        Timber.i("Size of edges: ${canny.width()}x${canny.height()}")
+
+        // Get slice
+        val slice = getSlice(canny)
+        Timber.i("Size of slice: ${slice.width()}x${slice.height()}")
+
+        // Get lines
+        val lines = getLines(slice)
+
+        // Visualize
+        val visualized = visualize(frame, lines)
+        Timber.i("Size of visualized: ${visualized.width()}x${visualized.height()}")
+
+        return visualized
+
     }
 
     override fun onDestroy() {
+        Timber.d("onDestroy")
         super.onDestroy()
-        cameraExecutor.shutdown()
+        binding.CvCamera.disableView()
+    }
+
+    override fun onPause() {
+        Timber.d("onPause")
+        super.onPause()
+        binding.CvCamera.disableView()
     }
 
     override fun onResume() {
+        Timber.d("onResume")
         super.onResume()
-        if (allPermissionsGranted()){
-            startCamera()
-        } else {
-            requestPermissionLauncher.launch(REQUIRED_PERMISSIONS)
-        }
     }
-
-    companion object {
-        private const val TAG = "Camera"
-        private const val REQUEST_CODE_PERMISSIONS = 10
-        private val REQUIRED_PERMISSIONS = mutableListOf (
-            Manifest.permission.CAMERA
-        ).toTypedArray()
-    }
-
-
-
-
-    //below ---> opencv part
     private fun getEdges(source: Mat): Mat {
         val gray = Mat()
-        Imgproc.cvtColor(source, gray, Imgproc.COLOR_RGB2GRAY)
+//        Imgproc.cvtColor(source, gray, Imgproc.COLOR_RGB2GRAY)
+        Imgproc.cvtColor(source, gray, Imgproc.COLOR_BGR2GRAY)
 
         val blur = Mat()
         Imgproc.GaussianBlur(gray, blur, Size(5.0, 5.0), 0.0)
@@ -200,14 +316,27 @@ class LaneDetectionActivity : AppCompatActivity() {
         val width = source.width().toDouble()
 
         val polygons: List<MatOfPoint> = listOf(
+//            MatOfPoint(
+//                Point(400.0, 300.0),   //
+//                Point(400.0, 600.0),
+//                Point(height, 750.0), //
+//                Point(height, 150.0)       //
+//            )
+//        )
+//            MatOfPoint(
+//                Point(width * 0.0, height * 1.0), // bottom left
+//                Point(width * 0.4, height * 0.4),  // top left
+//                Point(width * 0.6, height * 0.4),  // top right
+//                Point(width * 0.8, height * 1.0)  // bottom right
+//            )
             MatOfPoint(
-                Point(175.0, height),   // bottom left
-                Point(450.0, 400.0), // top left
-                Point(900.0, 400.0), // top right
-                Point(width, height)       // bottom right
+
+                Point(width * 0.4, height * 0.4),  // top left
+                Point(width * 0.6, height * 0.4),  // top right
+                Point(width * 0.8, height * 1.0) , // bottom right
+                Point(width * 0.0, height * 1.0) // bottom left
             )
         )
-
         val mask = Mat.zeros(source.rows(), source.cols(), 0)
         Imgproc.fillPoly(mask, polygons, Scalar(255.0))
 
@@ -219,7 +348,7 @@ class LaneDetectionActivity : AppCompatActivity() {
 
     private fun getLines(source: Mat): Pair<HoughLine, HoughLine> {
         val lines = Mat()
-        Imgproc.HoughLinesP(source, lines, 2.0, Math.PI / 180, 100, 100.0, 50.0)
+        Imgproc.HoughLinesP(source, lines,1.0, Math.PI/180, 20, 20.0, 500.0)
 
         val left = HoughLine(source)
         val right = HoughLine(source)
@@ -241,14 +370,20 @@ class LaneDetectionActivity : AppCompatActivity() {
                 right.add(fitted)
             }
         }
+        println(left.coordinates)
+        println(right.coordinates)
 
         return Pair(left, right)
     }
 
     private fun visualize(source: Mat, lines: Pair<HoughLine, HoughLine>): Mat {
+        println(source.size())
+        println("printed size of source")
         val grey = Mat.zeros(source.rows(), source.cols(), 0)
-        val dest = Mat()
-        Imgproc.cvtColor(grey, dest, Imgproc.COLOR_GRAY2RGB)
+        println("printed size of dest")
+//        Imgproc.cvtColor(grey, dest, Imgproc.COLOR_GRAY2RGB)
+        val dest = Mat(source.rows(), source.cols(), CvType.CV_8UC4)
+
 
         val color = Scalar(0.0, 255.0, 0.0)
         Imgproc.line(
@@ -267,10 +402,9 @@ class LaneDetectionActivity : AppCompatActivity() {
         )
 
         val done = Mat()
-        Core.addWeighted(source, 0.9, dest, 1.0, 1.0, done)
+        Core.addWeighted(source, 0.5, dest, 1.0, 1.0, done)
+
 
         return done
     }
-
-
 }

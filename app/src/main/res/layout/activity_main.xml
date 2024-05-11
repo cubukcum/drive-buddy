@@ -24,7 +24,7 @@
         android:textStyle="bold"
         android:padding="10dp"
         android:background="#FF5733"
-        android:onClick="onButtonClickedDistance2" />
+        android:onClick="onButtonClickedDistance1" />
         />
 
     <Button

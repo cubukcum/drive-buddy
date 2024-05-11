@@ -33,6 +33,8 @@ migrate_working_dir/
 *.iws
 .idea/
 
+/opencvsdk490/
+
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
@@ -59,4 +61,3 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 >>>>>>> 989f919d9fdb46998a0d073de62e7770eb64778c
-
