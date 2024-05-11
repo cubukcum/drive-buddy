@@ -1,109 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/gridLayout"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:columnCount="3"
-    android:rowCount="3"
-    android:alignmentMode="alignMargins"
-    android:columnOrderPreserved="false" android:padding="16dp" >
+    android:layout_height="match_parent">
 
-
-
-    <Button
-        android:id="@+id/button1"
-        android:layout_margin="5dp"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/navHostFragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_columnWeight="1"
-        android:layout_rowWeight="1"
-        android:text="Şerit Takıp"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:padding="10dp"
-        android:background="#FF5733" />
+        app:defaultNavHost="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navGraph="@navigation/main_graph" />
 
-    <Button
-
-        android:id="@+id/button2"
-        android:layout_margin="5dp"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_columnWeight="1"
-        android:layout_rowWeight="1"
-        android:text="Levha Takip"
-        android:padding="10dp"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:background="#9C27B0"
-        />
-
-    <Button
-        android:id="@+id/button3"
-        android:layout_margin="5dp"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_columnWeight="1"
-        android:layout_rowWeight="1"
-        android:text="Mesafe Uyarı"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:padding="10dp"
-        android:background="@color/green"
-        android:onClick="onButtonClickedDistance" />
-     />
-
-    <Button
-        android:id="@+id/button4"
-        android:layout_margin="5dp"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_columnWeight="1"
-        android:layout_rowWeight="1"
-        android:text="Silah Uyarı"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:padding="10dp"
-        android:background="@color/blue"
-  />
-
-    <Button
-        android:id="@+id/button5"
-        android:layout_margin="5dp"
-
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_columnWeight="1"
-        android:layout_rowWeight="1"
-        android:text="Uyku Uyarı"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:padding="10dp"
-        android:background="#E91E63"
-       />
-
-    <Button
-        android:id="@+id/button6"
-        android:layout_margin="5dp"
-
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_columnWeight="1"
-        android:layout_rowWeight="1"
-        android:text="Yol kayıt"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:padding="16dp"
-        android:background="@color/water_green"
-        android:onClick="onButtonClickedd" />
-
-
-
-</GridLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
