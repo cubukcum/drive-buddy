@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.TypedValue
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
 import com.example.drive_buddy.databinding.ActivityLaneDetectionBinding
 import com.example.drive_buddy.Constants.GIT_HASH
@@ -32,8 +33,7 @@ import org.apache.commons.math3.fitting.PolynomialCurveFitter
 import org.apache.commons.math3.fitting.WeightedObservedPoints
 
 
-class LaneDetectionActivity : CameraActivity(), CvCameraViewListener2 {
-
+class LaneDetectionActivity : CameraActivity(), CvCameraViewListener2{
     private lateinit var binding: ActivityLaneDetectionBinding
     private lateinit var mRGBA: Mat
     private lateinit var mRGBAT: Mat
