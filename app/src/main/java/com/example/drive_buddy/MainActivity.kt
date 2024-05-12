@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 
 
-class MainActivity2 : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

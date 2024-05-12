@@ -33,6 +33,13 @@ val navController= rememberNavController()
 
         }
 
+        composable("uyku_takip") {
+            // Kamera ekranına geçiş yapmak için intent oluşturun ve başlatın
+            val intent = Intent(LocalContext.current, DrowsinessClassificationActivity::class.java)
+            LocalContext.current.startActivity(intent)
+
+        }
+
         composable("camera_screen") {
             // Kamera ekranına geçiş yapmak için intent oluşturun ve başlatın
             val intent = Intent(LocalContext.current, CameraActivity::class.java)

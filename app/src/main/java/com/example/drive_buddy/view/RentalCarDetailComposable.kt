@@ -285,7 +285,7 @@ fun CarSpecItem(spec: CarSpec,navController: NavController,context: Context) {
 
             }
             "Uyku Takip" -> {
-                playSound(context, R.raw.takip_mesafesi)
+                navController.navigate("uyku_takip")
             }
 
         }
