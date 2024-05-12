@@ -53,6 +53,8 @@ class LaneDetectionActivity : CameraActivity(), CvCameraViewListener2 {
         }
     }
 
+    private external fun openCVVersion(): String?
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Timber.d("OpenCV Version: $OPENCV_VERSION")
@@ -96,7 +98,7 @@ configButtons();
 
                 R.id.about -> {
                     // Get app version and githash from BuildConfig
-                    val cvVer =  "openCVVersion()" // Get OpenCV version from native code
+                    val cvVer =  openCVVersion() // Get OpenCV version from native code
                     val toast: Toast = Toast.makeText(
                         this,
                         "CvCamera-Mobile - Version $VERSION_NAME-$GIT_HASH - OpenCV $cvVer ",

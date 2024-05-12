@@ -15,6 +15,20 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+                (file("../opencvsdk490").absolutePath + "/sdk/native/jni")
+                arguments(
+                    "-DOpenCV_DIR=" + file("../opencvsdk490").absolutePath + "/sdk/native/jni",
+                    "-DANDROID_TOOLCHAIN=clang",
+                    "-DANDROID_STL=c++_shared"
+                )
+                cppFlags("")
+            }
+        }
+
+
+
 
     }
 
@@ -36,9 +50,11 @@ android {
     }
     externalNativeBuild {
         cmake {
-            file("src/main/cpp/CMakeLists.txt")
+            path(file("src/main/cpp/CMakeLists.txt"))
+            version = "3.18.1"
         }
     }
+
     buildFeatures {
         viewBinding = true
     }
