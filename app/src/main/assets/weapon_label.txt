@@ -1,0 +1,6 @@
+Pistol
+Smartphone
+Knife
+Purse
+Bill
+Card

@@ -122,7 +122,8 @@ class Detector(
                 arrayIdx += numElements
             }
 
-            if (maxConf > CONFIDENCE_THRESHOLD && (maxIdx == 2 || maxIdx == 3 || maxIdx == 5 || maxIdx ==7)) {
+//            if (maxConf > CONFIDENCE_THRESHOLD && (maxIdx == 2 || maxIdx == 3 || maxIdx == 5 || maxIdx ==7)) {
+            if (maxConf > CONFIDENCE_THRESHOLD) {
                 val clsName = labels[maxIdx]
                 val cx = array[c] // 0
                 val cy = array[c + numElements] // 1
