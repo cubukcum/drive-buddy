@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "241776464170",
+    "project_id": "drive-buddy-29964",
+    "storage_bucket": "drive-buddy-29964.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:241776464170:android:40e1528bbeeb5445ef8e53",
+        "android_client_info": {
+          "package_name": "com.example.drive_buddy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1hjvW3ZtbUZqxYKlwIlUXayseVAyP8aQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

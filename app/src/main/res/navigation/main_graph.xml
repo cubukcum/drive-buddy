@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_graph"
+    app:startDestination="@id/rentalCarMainFragment">
+
+    <fragment
+        android:id="@+id/rentalCarMainFragment"
+        android:name="com.example.drive_buddy.RentalCarMainFragment"
+        android:label="RentalCarMainFragment" >
+        <action
+            android:id="@+id/action_rentalCarMainFragment_to_rentalCarDetailFragment"
+            app:destination="@id/rentalCarDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/rentalCarDetailFragment"
+        android:name="com.example.drive_buddy.RentalCarDetailFragment"
+        android:label="RentalCarDetailFragment" />
+</navigation>
