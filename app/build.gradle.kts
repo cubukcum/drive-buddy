@@ -8,15 +8,25 @@ plugins {
 android {
     namespace = "com.example.drive_buddy"
     compileSdk = 34
-
     defaultConfig {
         applicationId = "com.example.drive_buddy"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        externalNativeBuild {
+            cmake {
+                (file("../opencvsdk490").absolutePath + "/sdk/native/jni")
+                arguments(
+                    "-DOpenCV_DIR=" + file("../opencvsdk490").absolutePath + "/sdk/native/jni",
+                    "-DANDROID_TOOLCHAIN=clang",
+                    "-DANDROID_STL=c++_shared"
+                )
+                cppFlags("")
+            }
+        }
     }
 
     buildTypes {
@@ -36,6 +46,13 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    externalNativeBuild {
+        cmake {
+            path(file("src/main/cpp/CMakeLists.txt"))
+            version = "3.18.1"
+        }
+    }
+
     buildFeatures {
         viewBinding = true
         compose = true

@@ -40,6 +40,33 @@ val navController= rememberNavController()
 
         }
 
+        composable("serit_takip") {
+            // Kamera ekranına geçiş yapmak için intent oluşturun ve başlatın
+            val intent = Intent(LocalContext.current, LaneDetectionActivity::class.java)
+            LocalContext.current.startActivity(intent)
+
+        }
+
+        composable("silah_takip") {
+            // Kamera ekranına geçiş yapmak için intent oluşturun ve başlatın
+            val intent = Intent(LocalContext.current, WeaponDetectionActivity::class.java)
+            LocalContext.current.startActivity(intent)
+
+        }
+        composable("trafik_takip") {
+            // Kamera ekranına geçiş yapmak için intent oluşturun ve başlatın
+            val intent = Intent(LocalContext.current, SignDetectionActivity::class.java)
+            LocalContext.current.startActivity(intent)
+
+        }
+
+        composable("arac_takip") {
+            // Kamera ekranına geçiş yapmak için intent oluşturun ve başlatın
+            val intent = Intent(LocalContext.current, RoadDetectionActivity::class.java)
+            LocalContext.current.startActivity(intent)
+
+        }
+
         composable("camera_screen") {
             // Kamera ekranına geçiş yapmak için intent oluşturun ve başlatın
             val intent = Intent(LocalContext.current, CameraActivity::class.java)
@@ -69,7 +96,7 @@ val navController= rememberNavController()
                         R.drawable.keles
                     ),
                     CarSpec(
-                        "Harita",
+                        "Fren Uyarı",
                         R.drawable.map3
                     ),
                     CarSpec(

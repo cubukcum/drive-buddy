@@ -247,7 +247,8 @@ fun RentalCarDetailScreen(navController: NavController,car: RentalCarModel) {
                     .width(164.dp)
                     .height(56.dp),
                 onClick = {
-                          print("bastın")
+                    navController.navigate("harita_screen")
+
 
                 },
                 shape = RoundedCornerShape(12.dp),
@@ -258,7 +259,7 @@ fun RentalCarDetailScreen(navController: NavController,car: RentalCarModel) {
             ) {
 
                 Text(
-                    text = "Drive Buddy",
+                    text = "Harita",
                     modifier = Modifier
                         .align(Alignment.CenterVertically),
                     style = TextStyle(
@@ -280,12 +281,24 @@ fun CarSpecItem(spec: CarSpec,navController: NavController,context: Context) {
             "Yol Kayıt" -> {
                 navController.navigate("camera_screen")
             }
-            "Harita" -> {
-                navController.navigate("harita_screen")
+            "Fren Uyarı" -> {
+                navController.navigate("arac_takip")
 
             }
             "Uyku Takip" -> {
                 navController.navigate("uyku_takip")
+            }
+
+            "Şerit Takip" -> {
+                navController.navigate("serit_takip")
+            }
+
+            "Silah Takip" -> {
+                navController.navigate("silah_takip")
+            }
+
+            "Trafik İşareti" -> {
+                navController.navigate("trafik_takip")
             }
 
         }
