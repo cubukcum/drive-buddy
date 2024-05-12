@@ -107,6 +107,7 @@ fun RentalCarMainScreen(navController: NavController,context: Context) {
                     .fillMaxWidth()
                     .height(64.dp),
                 onClick = {
+                    playSound(context, R.raw.baslangic_sesi)
                     carState = MoveAnimationState.END
                     navController.navigate("ikinci_sayfa")
                     playSound(context, R.raw.baslangic_sesi)

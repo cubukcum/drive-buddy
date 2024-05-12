@@ -112,5 +112,14 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    
+    implementation(project(":opencvsdk490"))
+    implementation("com.jakewharton.timber:timber:5.0.1")
+
+
+    implementation("org.tensorflow:tensorflow-lite-task-vision:+")
+    implementation("org.apache.commons:commons-math3:3.6.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.2")
+
 
 }

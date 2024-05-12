@@ -16,7 +16,6 @@ import com.example.drive_buddy.view.RentalCarMainScreen
 import androidx.fragment.app.viewModels
 import com.example.drive_buddy.model.CarSpec
 
-
 @Composable
 fun sayfaGecisleri(){
 
@@ -31,6 +30,7 @@ val navController= rememberNavController()
             // Kamera ekranına geçiş yapmak için intent oluşturun ve başlatın
             val intent = Intent(LocalContext.current, SignInActivity::class.java)
             LocalContext.current.startActivity(intent)
+
         }
 
         composable("camera_screen") {
@@ -43,20 +43,6 @@ val navController= rememberNavController()
             // Kamera ekranına geçiş yapmak için intent oluşturun ve başlatın
             val intent = Intent(LocalContext.current, MapActivity::class.java)
             LocalContext.current.startActivity(intent)
-
-            val context = LocalContext.current
-            // Kullanıcı geri tuşuna bastığında
-            BackHandler {
-                print("geri tuşuna basıldı.")
-                navController.navigate("ikinci_sayfa"){
-                    popUpTo("harita_screen"){
-                        inclusive=true
-                    }
-                }
-            }
-
-
-
         }
 
         composable(route="ikinci_sayfa"){
@@ -65,27 +51,27 @@ val navController= rememberNavController()
                     CarSpec(
                         "Uyku Takip",
 
-                        R.drawable.ic_rental_speedometer
+                        R.drawable.sleep
                     ),
                     CarSpec(
                         "Şerit Takip",
-                        R.drawable.ic_rental_horsepower
+                        R.drawable.road3
                     ),
                     CarSpec(
                         "Silah Takip",
-                        R.drawable.ic_rental_seat
+                        R.drawable.keles
                     ),
                     CarSpec(
                         "Harita",
-                        R.drawable.ic_rental_car_door
+                        R.drawable.map3
                     ),
                     CarSpec(
                         "Trafik İşareti",
-                        R.drawable.ic_rental_fuel
+                        R.drawable.traffic_light
                     ),
                     CarSpec(
                         "Yol Kayıt",
-                        R.drawable.ic_rental_sensor
+                        R.drawable.camera
                     )
                 ),
                 dealerImage = R.drawable.ic_rental_pp,

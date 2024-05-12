@@ -44,6 +44,12 @@ import com.google.firebase.auth.FirebaseAuth
 
 import android.media.MediaPlayer
 import android.content.Context
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 
 
@@ -83,7 +89,19 @@ fun RentalCarDetailScreen(navController: NavController,car: RentalCarModel) {
                     .padding(start = 24.dp, top = 16.dp, end = 24.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Box(
+
+
+                //geri tuşu
+
+                Button(
+                    onClick = {
+                              navController.navigate("ilk_sayfa")
+
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = RentalPrimary,
+                        contentColor = RentalSecondary
+                    ),
                     modifier = Modifier
                         .height(48.dp)
                         .width(48.dp)
@@ -95,9 +113,9 @@ fun RentalCarDetailScreen(navController: NavController,car: RentalCarModel) {
                         modifier = Modifier
                             .height(24.dp)
                             .width(24.dp)
-                            .align(Alignment.Center)
                     )
                 }
+
 
                 Text(
                     text = car.brand,
@@ -106,25 +124,67 @@ fun RentalCarDetailScreen(navController: NavController,car: RentalCarModel) {
                     style = TextStyle(fontSize = 20.sp, fontFamily = MuliRegular, color = Color.White)
                 )
 
-                Button(onClick = {
-                    FirebaseAuth.getInstance().signOut()
-                    navController.navigate("signin")
-                },colors = ButtonDefaults.buttonColors(
-                    backgroundColor = RentalSecondary,
-                    contentColor = RentalSecondary
-                )) {
+                // Menüyü göstermek için açılır menü durumu
+                var isMenuVisible by remember { mutableStateOf(false) }
+
+                // Menü öğeleri
+                val menuItems = listOf(
+                    "Profil",
+                    "Ayarlar",
+                    "Çıkış"
+                )
 
 
-                    Image(
-                        painter = painterResource(id = car.dealerImage),
-                        contentDescription = "",
-                        modifier = Modifier
-                            .height(48.dp)
-                            .width(48.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .align(Alignment.CenterVertically), contentScale = ContentScale.Crop
 
-                    )
+                // Buton ve menüyü birlikte içeren bileşen
+                Column {
+                    Button(
+                        onClick = { isMenuVisible = true },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = RentalSecondary,
+                            contentColor = RentalSecondary
+                        )
+                    ) {
+                        Image(
+                            painter = painterResource(id = car.dealerImage),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .height(48.dp)
+                                .width(48.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .align(Alignment.CenterVertically),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+
+                    // Açılır menüyü göstermek için bir alt bileşen
+                    DropdownMenu(
+                        expanded = isMenuVisible,
+                        onDismissRequest = { isMenuVisible = false }
+                    ) {
+                        menuItems.forEach { item ->
+                            DropdownMenuItem(onClick = {
+
+                                if(item=="Çıkış"){
+                                    FirebaseAuth.getInstance().signOut()
+                                    navController.navigate("signin"){
+                                        popUpTo("ikinci_sayfa"){
+                                            inclusive=true
+                                        }
+                                    }
+                                }
+
+
+                                // Menü öğesine tıklandığında yapılacak işlemler
+                                // Örneğin, seçilen öğe üzerinde işlem yapabilir veya
+                                // Başka bir ekrana geçiş yapabilirsiniz.
+                                // Bu örnekte, sadece menüyü gizliyoruz.
+                                isMenuVisible = false
+                            }) {
+                                Text(text = item)
+                            }
+                        }
+                    }
                 }
             }
 
