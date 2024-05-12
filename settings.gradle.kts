@@ -21,6 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "drive_buddy"
 include(":app")
-include (":opencvsdk490")
+include(":opencvsdk490")
 project(":opencvsdk490").projectDir = file("opencvsdk490/sdk")
  
