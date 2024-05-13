@@ -1,9 +1,18 @@
 package com.example.drive_buddy
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.SystemClock
-import com.example.drive_buddy.view.playSound
+import android.telephony.SmsManager
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.ActivityCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.maps.GoogleMap
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.support.common.FileUtil
@@ -17,7 +26,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 
-class Detector(
+class WeaponDetector(
     private val context: Context,
     private val modelPath: String,
     private val labelPath: String,
@@ -105,6 +114,7 @@ class Detector(
         detectorListener.onDetect(bestBoxes, inferenceTime)
     }
 
+    @SuppressLint("MissingPermission")
     private fun bestBox(array: FloatArray) : List<BoundingBox>? {
 
         val boundingBoxes = mutableListOf<BoundingBox>()
@@ -138,10 +148,32 @@ class Detector(
                 if (y1 < 0F || y1 > 1F) continue
                 if (x2 < 0F || x2 > 1F) continue
                 if (y2 < 0F || y2 > 1F) continue
+                if (maxIdx==0 || maxIdx==2){
+                    lateinit var fusedLocationClient: FusedLocationProviderClient
 
-                if(maxIdx == 1){
-                    playSound(context,R.raw.uyukluyorsunuz)
-                    Thread.sleep(30000)
+                   // fusedLocationClient.lastLocation
+                     //    .addOnSuccessListener { location ->
+                            try {
+                              //  val konum= "enlem" +location.latitude + "boylam" + location.longitude
+                               // println(konum)
+                                val smsManager: SmsManager
+                                if (Build.VERSION.SDK_INT>=23) {
+                                    smsManager = context.getSystemService(SmsManager::class.java)
+                                }
+                                else{
+                                    smsManager = SmsManager.getDefault()
+                                }
+                                smsManager.sendTextMessage("+905519556453", null, "Yardım et.", null, null)
+                                println("Pistol or Knife detected")
+                                Thread.sleep(1000000)
+
+                            } catch (e: Exception) {
+
+                            }
+
+
+                        //}
+
                 }
 
                 boundingBoxes.add(
@@ -158,6 +190,7 @@ class Detector(
 
         return applyNMS(boundingBoxes)
     }
+
 
     private fun applyNMS(boxes: List<BoundingBox>) : MutableList<BoundingBox> {
         val sortedBoxes = boxes.sortedByDescending { it.cnf }.toMutableList()

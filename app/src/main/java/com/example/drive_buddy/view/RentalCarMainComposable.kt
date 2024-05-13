@@ -1,7 +1,10 @@
 package com.example.drive_buddy.view
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Handler
 import android.os.Looper
+import androidx.appcompat.app.AlertDialog
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
@@ -16,20 +19,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import com.example.drive_buddy.R
-import com.example.drive_buddy.model.RentalCarModel
 import com.example.drive_buddy.theme.*
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import kotlinx.coroutines.time.delay
+import com.example.drive_buddy.MapActivity
+
 
 
 
@@ -38,6 +40,25 @@ fun RentalCarMainScreen(navController: NavController,context: Context) {
     rememberSystemUiController().apply {
         setSystemBarsColor(RentalPrimary, darkIcons = false)
         setNavigationBarColor(RentalPrimary, false)
+    }
+
+
+
+    if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        // Konum izni verilmemiş, kullanıcıya uyarı göster
+         fun showLocationPermissionAlertDialog() {
+            val builder = AlertDialog.Builder(context)
+            builder.setTitle("Konum İzni Gerekli")
+            builder.setMessage("Uygulamayı kullanabilmek için konum izni gereklidir.")
+            builder.setPositiveButton("İzin Ver") { _, _ ->
+                //ActivityCompat.requestPermissions(this@Renta, arrayOf(Manifest.permission.SEND_SMS), 1)
+            }
+            builder.setNegativeButton("Vazgeç") { _, _ ->
+                // İptal edildiğinde yapılacak işlemler
+            }
+            val dialog = builder.create()
+            dialog.show()
+        }
     }
 
 
@@ -107,11 +128,9 @@ fun RentalCarMainScreen(navController: NavController,context: Context) {
                     .fillMaxWidth()
                     .height(64.dp),
                 onClick = {
-                    playSound(context, R.raw.baslangic_sesi)
+                    playSound(context,R.raw.baslangic_sesi)
                     carState = MoveAnimationState.END
                     navController.navigate("ikinci_sayfa")
-                    playSound(context, R.raw.baslangic_sesi)
-
                 },
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(

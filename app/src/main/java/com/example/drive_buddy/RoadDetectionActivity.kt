@@ -23,7 +23,7 @@ import com.example.drive_buddy.databinding.ActivityRoadDetectionBinding
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class RoadDetectionActivity : AppCompatActivity(), Detector.DetectorListener {
+class RoadDetectionActivity : AppCompatActivity(), RoadDetector.DetectorListener {
     private lateinit var binding: ActivityRoadDetectionBinding
     private val isFrontCamera = false
 
@@ -31,7 +31,7 @@ class RoadDetectionActivity : AppCompatActivity(), Detector.DetectorListener {
     private var imageAnalyzer: ImageAnalysis? = null
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
-    private lateinit var detector: Detector
+    private lateinit var detector: RoadDetector
 
     private lateinit var cameraExecutor: ExecutorService
 
@@ -39,13 +39,12 @@ class RoadDetectionActivity : AppCompatActivity(), Detector.DetectorListener {
         super.onCreate(savedInstanceState)
         binding = ActivityRoadDetectionBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         binding.button.setOnClickListener {
             val intent = Intent(this, MainActivity2::class.java)
             startActivity(intent)
         }
 
-        detector = Detector(baseContext, MODEL_PATH, LABELS_PATH, this)
+        detector = RoadDetector(baseContext, MODEL_PATH, LABELS_PATH, this)
         detector.setup()
 
         if (allPermissionsGranted()) {
@@ -55,13 +54,6 @@ class RoadDetectionActivity : AppCompatActivity(), Detector.DetectorListener {
         }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        val intent = Intent(this, MainActivity2::class.java)
-        startActivity(intent)
-        finish()
     }
 
     private fun startCamera() {

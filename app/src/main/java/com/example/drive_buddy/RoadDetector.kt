@@ -3,6 +3,7 @@ package com.example.drive_buddy
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.SystemClock
+import com.example.drive_buddy.BoundingBox
 import com.example.drive_buddy.view.playSound
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.Interpreter
@@ -17,7 +18,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 
-class Detector(
+class RoadDetector(
     private val context: Context,
     private val modelPath: String,
     private val labelPath: String,
@@ -138,11 +139,13 @@ class Detector(
                 if (y1 < 0F || y1 > 1F) continue
                 if (x2 < 0F || x2 > 1F) continue
                 if (y2 < 0F || y2 > 1F) continue
-
-                if(maxIdx == 1){
-                    playSound(context,R.raw.uyukluyorsunuz)
+                val boundingBoxSize = w*h
+                if(boundingBoxSize >= 0.25){
+                    playSound(context,R.raw.mesafe)
+                    println("Be careful!")
                     Thread.sleep(30000)
                 }
+
 
                 boundingBoxes.add(
                     BoundingBox(
@@ -158,6 +161,7 @@ class Detector(
 
         return applyNMS(boundingBoxes)
     }
+
 
     private fun applyNMS(boxes: List<BoundingBox>) : MutableList<BoundingBox> {
         val sortedBoxes = boxes.sortedByDescending { it.cnf }.toMutableList()

@@ -37,10 +37,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     private var currentLocationMarker: Marker? = null
     override fun onCreate(savedInstanceState: Bundle?) {
-        print("mape geldiniz")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
-        print("mape geldiniz")
+
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -90,18 +89,15 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 val geocoder = Geocoder(this@MapActivity, Locale.getDefault())
                 try {
                     val adresListesi=geocoder.getFromLocation(location.latitude,location.longitude,1)
-
                     if(adresListesi !=null){
                         if(adresListesi.size>0){
                             println(adresListesi.get(0).toString())
 
                         }
                     }
-
                 }catch (e:Exception){
                     e.printStackTrace()
                 }
-
             }
         }
 
@@ -111,7 +107,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         } else {
             // İzin zaten verilmiş
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1f, locationListener)
-
             val sonBilinenKonum=locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
             if(sonBilinenKonum != null){
                 val sonBilinenLatLng=LatLng(sonBilinenKonum.latitude,sonBilinenKonum.longitude)

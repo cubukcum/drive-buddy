@@ -54,12 +54,14 @@ import androidx.compose.ui.platform.LocalContext
 
 
 fun playSound(context: Context, resId: Int) {
-    val mediaPlayer = MediaPlayer.create(context, resId)
-    mediaPlayer?.start()
 
+    var lastPlayTime: Long = 0
+
+    val mediaPlayer = MediaPlayer.create(context, resId)
     mediaPlayer?.setOnCompletionListener {
         mediaPlayer.release()
     }
+    mediaPlayer?.start()
 }
 
 

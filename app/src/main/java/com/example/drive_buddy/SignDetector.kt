@@ -17,7 +17,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 
-class Detector(
+class SignDetector(
     private val context: Context,
     private val modelPath: String,
     private val labelPath: String,
@@ -138,11 +138,18 @@ class Detector(
                 if (y1 < 0F || y1 > 1F) continue
                 if (x2 < 0F || x2 > 1F) continue
                 if (y2 < 0F || y2 > 1F) continue
-
-                if(maxIdx == 1){
-                    playSound(context,R.raw.uyukluyorsunuz)
+                if(maxIdx == 0){
+                    playSound(context,R.raw.yesil_isik)
                     Thread.sleep(30000)
+                    println("Green Light")
                 }
+                if(maxIdx == 1){
+                    playSound(context,R.raw.kirmizi_isik)
+                    Thread.sleep(30000)
+                    println("Green Light")
+                }
+//                println(clsName)
+//                println(maxIdx)
 
                 boundingBoxes.add(
                     BoundingBox(
@@ -158,6 +165,7 @@ class Detector(
 
         return applyNMS(boundingBoxes)
     }
+
 
     private fun applyNMS(boxes: List<BoundingBox>) : MutableList<BoundingBox> {
         val sortedBoxes = boxes.sortedByDescending { it.cnf }.toMutableList()
