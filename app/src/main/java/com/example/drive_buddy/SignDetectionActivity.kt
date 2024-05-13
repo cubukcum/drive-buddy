@@ -22,7 +22,7 @@ import com.example.drive_buddy.databinding.ActivitySignDetectionBinding
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class SignDetectionActivity : AppCompatActivity(), Detector.DetectorListener {
+class SignDetectionActivity : AppCompatActivity(), SignDetector.DetectorListener {
     private lateinit var binding: ActivitySignDetectionBinding
     private val isFrontCamera = false
 
@@ -30,7 +30,7 @@ class SignDetectionActivity : AppCompatActivity(), Detector.DetectorListener {
     private var imageAnalyzer: ImageAnalysis? = null
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
-    private lateinit var detector: Detector
+    private lateinit var detector: SignDetector
 
     private lateinit var cameraExecutor: ExecutorService
 
@@ -39,7 +39,7 @@ class SignDetectionActivity : AppCompatActivity(), Detector.DetectorListener {
         binding = ActivitySignDetectionBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        detector = Detector(baseContext, TRAFFIC_MODEL_PATH, TRAFFIC_LABELS_PATH, this)
+        detector = SignDetector(baseContext, TRAFFIC_MODEL_PATH, TRAFFIC_LABELS_PATH, this)
         detector.setup()
 
         if (allPermissionsGranted()) {

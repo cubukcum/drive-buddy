@@ -22,7 +22,7 @@ import com.example.drive_buddy.databinding.ActivityWeaponDetectionBinding
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class WeaponDetectionActivity : AppCompatActivity(), Detector.DetectorListener {
+class WeaponDetectionActivity : AppCompatActivity(), WeaponDetector.DetectorListener {
     private lateinit var binding: ActivityWeaponDetectionBinding
     private val isFrontCamera = true
 
@@ -30,7 +30,7 @@ class WeaponDetectionActivity : AppCompatActivity(), Detector.DetectorListener {
     private var imageAnalyzer: ImageAnalysis? = null
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
-    private lateinit var detector: Detector
+    private lateinit var detector: WeaponDetector
 
     private lateinit var cameraExecutor: ExecutorService
 
@@ -39,7 +39,7 @@ class WeaponDetectionActivity : AppCompatActivity(), Detector.DetectorListener {
         binding = ActivityWeaponDetectionBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        detector = Detector(baseContext, WEAPON_MODEL_PATH, WEAPON_LABELS_PATH, this)
+        detector = WeaponDetector(baseContext, WEAPON_MODEL_PATH, WEAPON_LABELS_PATH, this)
         detector.setup()
 
         if (allPermissionsGranted()) {
