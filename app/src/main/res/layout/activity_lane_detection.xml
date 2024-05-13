@@ -36,6 +36,22 @@
             android:src="@drawable/baseline_cameraswitch_24"
             app:layout_anchor="@id/bottomAppBar" />
 
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="37dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="201dp"
+            android:layout_marginBottom="11dp"
+            android:backgroundTint="@color/yellow"
+            android:text="Geri git"
+            app:layout_constraintBottom_toTopOf="@+id/view_finder"
+            app:layout_constraintEnd_toStartOf="@+id/inferenceTime"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="MissingConstraints" />
+
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

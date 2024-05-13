@@ -28,6 +28,7 @@ import androidx.camera.video.VideoRecordEvent
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.findNavController
 import com.example.drive_buddy.databinding.ActivityCameraBinding
@@ -70,9 +71,13 @@ class CameraActivity : AppCompatActivity() {
     private var orientationEventListener: OrientationEventListener? = null
     private var lensFacing = CameraSelector.LENS_FACING_BACK
     private var aspectRatio = AspectRatio.RATIO_16_9
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(mainBinding.root)
+
+
         if (checkMultiplePermission()) {
             startCamera()
         }
@@ -109,6 +114,9 @@ class CameraActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
+        val intent = Intent(this, MainActivity2::class.java)
+        startActivity(intent)
+        finish()
     }
 
 
@@ -449,13 +457,9 @@ class CameraActivity : AppCompatActivity() {
                             val message = "Video Capture Succeeded: " + "${recordEvent.outputResults.outputUri}"
                             Toast.makeText(
                                 this@CameraActivity,
-                                message,
+                                "Video başarıyla kaydedildi",
                                 Toast.LENGTH_LONG
                             ).show()
-
-                            // Video kaydı tamamlandığında VideoListActivity'e geçiş yap
-                            val intent = Intent(this@CameraActivity, VideoListActivity::class.java)
-                            startActivity(intent)
                             finish()
                         }else{
                             recording?.close()

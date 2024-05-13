@@ -1,5 +1,6 @@
 package com.example.drive_buddy
 
+import android.content.Intent
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.hardware.camera2.CameraAccessException
@@ -63,6 +64,13 @@ class LaneDetectionActivity : CameraActivity(), CvCameraViewListener2{
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         binding = ActivityLaneDetectionBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
+        binding.button.setOnClickListener {
+            val intent = Intent(this, MainActivity2::class.java)
+            startActivity(intent)
+        }
+
         mCameraManager = getSystemService(CAMERA_SERVICE) as CameraManager
 
         //
@@ -77,6 +85,7 @@ class LaneDetectionActivity : CameraActivity(), CvCameraViewListener2{
 configButtons();
 
     }
+
 
     private fun setButtonColors() {
         for (i in 0..<binding.bottomAppBar.menu.size()) {

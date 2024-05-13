@@ -20,15 +20,20 @@ class VideoListActivity : AppCompatActivity(), VideoListAdapter.OnItemClickListe
         recyclerView = findViewById(R.id.recyclerView2)
         recyclerView.layoutManager = LinearLayoutManager(this)
         val videoDirectoryPath = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)}"
-        print("video kaydedilen yer mi burası")
         print(videoDirectoryPath)
         val videoList = getVideoListFromDirectory(videoDirectoryPath)
         videoListAdapter = VideoListAdapter(videoList, this)
         recyclerView.adapter = videoListAdapter
     }
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val intent = Intent(this, MainActivity2::class.java)
+        startActivity(intent)
+        finish()
+    }
+
 
     override fun onItemClick(videoUri: String) {
-        print("buraya geldi empty")
         playVideo(Uri.parse(videoUri))
     }
 
@@ -57,7 +62,7 @@ class VideoListActivity : AppCompatActivity(), VideoListAdapter.OnItemClickListe
             cursor.close()
         }
 
-        return videoList
+        return videoList.reversed()
     }
 
 

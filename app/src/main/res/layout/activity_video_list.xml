@@ -6,6 +6,30 @@
     android:layout_height="match_parent"
     tools:context=".VideoListActivity">
 
+    <!-- App Bar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/yellow"
+        android:elevation="4dp"
+        app:title="Yol Kayıtları"
+        app:titleTextColor="@android:color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/cizgi"
+        android:layout_below="@id/toolbar"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView2"
         android:layout_width="0dp"
@@ -16,7 +40,11 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/layout" android:outlineAmbientShadowColor="@color/white" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        tools:listitem="@layout/layout" android:outlineAmbientShadowColor="@color/white"
+        android:divider="@drawable/cizgi"
+        android:dividerHeight="10dp" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

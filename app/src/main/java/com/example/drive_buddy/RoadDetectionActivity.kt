@@ -1,6 +1,7 @@
 package com.example.drive_buddy
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Matrix
@@ -39,6 +40,11 @@ class RoadDetectionActivity : AppCompatActivity(), Detector.DetectorListener {
         binding = ActivityRoadDetectionBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.button.setOnClickListener {
+            val intent = Intent(this, MainActivity2::class.java)
+            startActivity(intent)
+        }
+
         detector = Detector(baseContext, MODEL_PATH, LABELS_PATH, this)
         detector.setup()
 
@@ -49,6 +55,13 @@ class RoadDetectionActivity : AppCompatActivity(), Detector.DetectorListener {
         }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val intent = Intent(this, MainActivity2::class.java)
+        startActivity(intent)
+        finish()
     }
 
     private fun startCamera() {

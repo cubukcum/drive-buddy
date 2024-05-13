@@ -1,11 +1,13 @@
 package com.example.drive_buddy
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.AspectRatio
@@ -16,9 +18,17 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.drive_buddy.Constants.WEAPON_LABELS_PATH
 import com.example.drive_buddy.Constants.WEAPON_MODEL_PATH
 import com.example.drive_buddy.databinding.ActivityWeaponDetectionBinding
+import com.example.drive_buddy.model.CarSpec
+import com.example.drive_buddy.model.RentalCarModel
+import com.example.drive_buddy.view.RentalCarDetailScreen
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -33,11 +43,20 @@ class WeaponDetectionActivity : AppCompatActivity(), Detector.DetectorListener {
     private lateinit var detector: Detector
 
     private lateinit var cameraExecutor: ExecutorService
-
+    private lateinit var navController: NavController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityWeaponDetectionBinding.inflate(layoutInflater)
+        // onCreate metodunun içinde
+        binding.button.setOnClickListener {
+            val intent = Intent(this, MainActivity2::class.java)
+            startActivity(intent)
+        }
+
+// HedefActivity yerine, yönlendirilecek olan hedef aktivitesinin adını vermelisiniz.
+
         setContentView(binding.root)
+
 
         detector = Detector(baseContext, WEAPON_MODEL_PATH, WEAPON_LABELS_PATH, this)
         detector.setup()
@@ -49,7 +68,17 @@ class WeaponDetectionActivity : AppCompatActivity(), Detector.DetectorListener {
         }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
+
     }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val intent = Intent(this, MainActivity2::class.java)
+        startActivity(intent)
+    }
+
+
+
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)

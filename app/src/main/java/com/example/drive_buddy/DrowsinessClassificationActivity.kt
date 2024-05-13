@@ -1,6 +1,7 @@
 package com.example.drive_buddy
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Matrix
@@ -19,29 +20,32 @@ import androidx.core.content.ContextCompat
 import com.example.drive_buddy.Constants.DROWSINESS_MODEL_PATH
 import com.example.drive_buddy.Constants.DROWSINESS_LABELS_PATH
 import com.example.drive_buddy.databinding.ActivityDrowsinessClassificationBinding
+import com.example.drive_buddy.view.playSound
 import org.tensorflow.lite.task.vision.classifier.Classifications
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+
 class DrowsinessClassificationActivity : AppCompatActivity(), Classifier.ClassifierListener {
     private lateinit var binding: ActivityDrowsinessClassificationBinding
     private val isFrontCamera = false
-
     private var preview: Preview? = null
     private var imageAnalyzer: ImageAnalysis? = null
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
     private lateinit var classifier: Classifier
-
     private lateinit var cameraExecutor: ExecutorService
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDrowsinessClassificationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        classifier = Classifier(baseContext, DROWSINESS_MODEL_PATH, DROWSINESS_LABELS_PATH, this)
+        binding.button.setOnClickListener {
+            val intent = Intent(this, MainActivity2::class.java)
+            startActivity(intent)
+        }
 
+        classifier = Classifier(baseContext, DROWSINESS_MODEL_PATH, DROWSINESS_LABELS_PATH, this)
         classifier.setupImageClassifier()
 
         if (allPermissionsGranted()) {
@@ -51,6 +55,13 @@ class DrowsinessClassificationActivity : AppCompatActivity(), Classifier.Classif
         }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val intent = Intent(this, MainActivity2::class.java)
+        startActivity(intent)
+        finish()
     }
 
     private fun startCamera() {
@@ -186,6 +197,7 @@ class DrowsinessClassificationActivity : AppCompatActivity(), Classifier.Classif
             if (totalCounter % 50 == 0) {
                 // Check if 30 out of 50 detections indicate fatigue
                 if (fatigueCounter >= 30) {
+                    playSound(this, R.raw.uyukluyorsunuz)
                     // Print warning message if 30 out of 50 detections indicate fatigue
                     println("Driver is sleepy, warn!!!")
                 }

@@ -130,7 +130,7 @@ fun RentalCarDetailScreen(navController: NavController,car: RentalCarModel) {
                 // Menü öğeleri
                 val menuItems = listOf(
                     "Profil",
-                    "Ayarlar",
+                    "Kayıtlar",
                     "Çıkış"
                 )
 
@@ -164,6 +164,11 @@ fun RentalCarDetailScreen(navController: NavController,car: RentalCarModel) {
                     ) {
                         menuItems.forEach { item ->
                             DropdownMenuItem(onClick = {
+
+                                if(item=="Kayıtlar"){
+                                    navController.navigate("video_list")
+
+                                }
 
                                 if(item=="Çıkış"){
                                     FirebaseAuth.getInstance().signOut()
@@ -228,6 +233,7 @@ fun RentalCarDetailScreen(navController: NavController,car: RentalCarModel) {
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
+
 
             Text(
                 text = "Güvenli Sürüş",
