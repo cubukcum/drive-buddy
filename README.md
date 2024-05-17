@@ -8,4 +8,4 @@ vehicles smarter and ensure a safe journey through the "Drive Buddy" app, which 
 
 ## Screenshots
 
-![App Screenshots](./app/src/main/assets/Screenshots.png)
+![App Screenshots](./app/src/main/assets/mockupscreens.png)
