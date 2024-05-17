@@ -1,5 +1,6 @@
 package com.example.drive_buddy
 
+import android.content.Intent
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.hardware.camera2.CameraAccessException
@@ -9,6 +10,7 @@ import android.os.Bundle
 import android.util.TypedValue
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
 import com.example.drive_buddy.databinding.ActivityLaneDetectionBinding
 import com.example.drive_buddy.Constants.GIT_HASH
@@ -32,8 +34,7 @@ import org.apache.commons.math3.fitting.PolynomialCurveFitter
 import org.apache.commons.math3.fitting.WeightedObservedPoints
 
 
-class LaneDetectionActivity : CameraActivity(), CvCameraViewListener2 {
-
+class LaneDetectionActivity : CameraActivity(), CvCameraViewListener2{
     private lateinit var binding: ActivityLaneDetectionBinding
     private lateinit var mRGBA: Mat
     private lateinit var mRGBAT: Mat
@@ -63,6 +64,13 @@ class LaneDetectionActivity : CameraActivity(), CvCameraViewListener2 {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         binding = ActivityLaneDetectionBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
+        binding.button.setOnClickListener {
+            val intent = Intent(this, MainActivity2::class.java)
+            startActivity(intent)
+        }
+
         mCameraManager = getSystemService(CAMERA_SERVICE) as CameraManager
 
         //
@@ -77,6 +85,7 @@ class LaneDetectionActivity : CameraActivity(), CvCameraViewListener2 {
 configButtons();
 
     }
+
 
     private fun setButtonColors() {
         for (i in 0..<binding.bottomAppBar.menu.size()) {

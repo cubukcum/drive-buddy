@@ -1,6 +1,7 @@
 package com.example.drive_buddy
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Matrix
@@ -22,7 +23,7 @@ import com.example.drive_buddy.databinding.ActivityWeaponDetectionBinding
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class WeaponDetectionActivity : AppCompatActivity(), Detector.DetectorListener {
+class WeaponDetectionActivity : AppCompatActivity(), WeaponDetector.DetectorListener {
     private lateinit var binding: ActivityWeaponDetectionBinding
     private val isFrontCamera = true
 
@@ -30,7 +31,7 @@ class WeaponDetectionActivity : AppCompatActivity(), Detector.DetectorListener {
     private var imageAnalyzer: ImageAnalysis? = null
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
-    private lateinit var detector: Detector
+    private lateinit var detector: WeaponDetector
 
     private lateinit var cameraExecutor: ExecutorService
 
@@ -39,7 +40,12 @@ class WeaponDetectionActivity : AppCompatActivity(), Detector.DetectorListener {
         binding = ActivityWeaponDetectionBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        detector = Detector(baseContext, WEAPON_MODEL_PATH, WEAPON_LABELS_PATH, this)
+        binding.button.setOnClickListener {
+            val intent = Intent(this, MainActivity2::class.java)
+            startActivity(intent)
+        }
+
+        detector = WeaponDetector(baseContext, WEAPON_MODEL_PATH, WEAPON_LABELS_PATH, this)
         detector.setup()
 
         if (allPermissionsGranted()) {

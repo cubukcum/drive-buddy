@@ -3,6 +3,7 @@ package com.example.drive_buddy
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.SystemClock
+import com.example.drive_buddy.view.playSound
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.support.common.FileUtil
@@ -137,6 +138,11 @@ class Detector(
                 if (y1 < 0F || y1 > 1F) continue
                 if (x2 < 0F || x2 > 1F) continue
                 if (y2 < 0F || y2 > 1F) continue
+
+                if(maxIdx == 1){
+                    playSound(context,R.raw.uyukluyorsunuz)
+                    Thread.sleep(30000)
+                }
 
                 boundingBoxes.add(
                     BoundingBox(

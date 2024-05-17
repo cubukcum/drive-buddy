@@ -1,5 +1,7 @@
 package com.example.drive_buddy
-
+import android.content.Intent
+import com.example.drive_buddy.Detector
+import com.example.drive_buddy.MainActivity2
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -18,31 +20,34 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.drive_buddy.Constants.DROWSINESS_MODEL_PATH
 import com.example.drive_buddy.Constants.DROWSINESS_LABELS_PATH
-import com.example.drive_buddy.databinding.ActivityDrowsinessClassificationBinding
-import org.tensorflow.lite.task.vision.classifier.Classifications
+import com.example.drive_buddy.databinding.ActivityRoadDetectionBinding
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class DrowsinessClassificationActivity : AppCompatActivity(), Classifier.ClassifierListener {
-    private lateinit var binding: ActivityDrowsinessClassificationBinding
+class DrowsinessClassificationActivity : AppCompatActivity(), Detector.DetectorListener {
+    private lateinit var binding: ActivityRoadDetectionBinding
     private val isFrontCamera = false
 
     private var preview: Preview? = null
     private var imageAnalyzer: ImageAnalysis? = null
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
-    private lateinit var classifier: Classifier
+    private lateinit var detector: Detector
 
     private lateinit var cameraExecutor: ExecutorService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityDrowsinessClassificationBinding.inflate(layoutInflater)
+        binding = ActivityRoadDetectionBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        classifier = Classifier(baseContext, DROWSINESS_MODEL_PATH, DROWSINESS_LABELS_PATH, this)
+        binding.button.setOnClickListener {
+            val intent = Intent(this, MainActivity2::class.java)
+            startActivity(intent)
+        }
 
-        classifier.setupImageClassifier()
+        detector = Detector(baseContext, DROWSINESS_MODEL_PATH, DROWSINESS_LABELS_PATH, this)
+        detector.setup()
 
         if (allPermissionsGranted()) {
             startCamera()
@@ -51,6 +56,12 @@ class DrowsinessClassificationActivity : AppCompatActivity(), Classifier.Classif
         }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
+    }
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val intent = Intent(this, MainActivity2::class.java)
+        startActivity(intent)
+        finish()
     }
 
     private fun startCamera() {
@@ -111,7 +122,7 @@ class DrowsinessClassificationActivity : AppCompatActivity(), Classifier.Classif
                 matrix, true
             )
 
-            classifier.classify(rotatedBitmap)
+            detector.detect(rotatedBitmap)
         }
 
         cameraProvider.unbindAll()
@@ -141,7 +152,7 @@ class DrowsinessClassificationActivity : AppCompatActivity(), Classifier.Classif
 
     override fun onDestroy() {
         super.onDestroy()
-        classifier.clear()
+        detector.clear()
         cameraExecutor.shutdown()
     }
 
@@ -154,47 +165,6 @@ class DrowsinessClassificationActivity : AppCompatActivity(), Classifier.Classif
         }
     }
 
-    override fun onError(error: String) {
-        TODO("Not yet implemented")
-    }
-
-
-
-    var fatigueCounter = 0
-    var totalCounter = 0
-    override fun onResults(results: List<Classifications>?, inferenceTime: Long) {
-        println(results?.get(0))
-
-        // Check if results are not null and there's at least one classification
-        if (results != null && results.isNotEmpty()) {
-            // Get the first classification result
-            val classification = results[0]
-
-            // Iterate through categories to find if "Fatigue" category exists
-            for (category in classification.categories) {
-                if (category.label == "Fatigue") {
-                    // Increment the fatigue counter if "Fatigue" category is found
-                    fatigueCounter++
-                    break // Exit loop once "Fatigue" category is found
-                }
-            }
-
-            // Increment the total counter for each detection
-            totalCounter++
-
-            // Check if 50 detections have been reached
-            if (totalCounter % 50 == 0) {
-                // Check if 30 out of 50 detections indicate fatigue
-                if (fatigueCounter >= 30) {
-                    // Print warning message if 30 out of 50 detections indicate fatigue
-                    println("Driver is sleepy, warn!!!")
-                }
-                // Reset counters after every 50 detections
-                fatigueCounter = 0
-                totalCounter = 0
-            }
-        }
-    }
     companion object {
         private const val TAG = "Camera"
         private const val REQUEST_CODE_PERMISSIONS = 10
@@ -203,7 +173,18 @@ class DrowsinessClassificationActivity : AppCompatActivity(), Classifier.Classif
         ).toTypedArray()
     }
 
+    override fun onEmptyDetect() {
+        binding.overlay.invalidate()
+    }
 
-
-
+    override fun onDetect(boundingBoxes: List<BoundingBox>, inferenceTime: Long) {
+        runOnUiThread {
+            binding.inferenceTime.text = "${inferenceTime}ms"
+            binding.overlay.apply {
+                setResults(boundingBoxes)
+                invalidate()
+            }
+        }
+    }
 }
+

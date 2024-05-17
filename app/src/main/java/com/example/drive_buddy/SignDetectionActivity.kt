@@ -1,6 +1,7 @@
 package com.example.drive_buddy
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Matrix
@@ -22,15 +23,14 @@ import com.example.drive_buddy.databinding.ActivitySignDetectionBinding
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class SignDetectionActivity : AppCompatActivity(), Detector.DetectorListener {
+class SignDetectionActivity : AppCompatActivity(), SignDetector.DetectorListener {
     private lateinit var binding: ActivitySignDetectionBinding
-    private val isFrontCamera = false
-
+    private val isFrontCamera = true
     private var preview: Preview? = null
     private var imageAnalyzer: ImageAnalysis? = null
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
-    private lateinit var detector: Detector
+    private lateinit var detector: SignDetector
 
     private lateinit var cameraExecutor: ExecutorService
 
@@ -39,7 +39,12 @@ class SignDetectionActivity : AppCompatActivity(), Detector.DetectorListener {
         binding = ActivitySignDetectionBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        detector = Detector(baseContext, TRAFFIC_MODEL_PATH, TRAFFIC_LABELS_PATH, this)
+        binding.button.setOnClickListener {
+            val intent = Intent(this, MainActivity2::class.java)
+            startActivity(intent)
+        }
+
+        detector = SignDetector(baseContext, TRAFFIC_MODEL_PATH, TRAFFIC_LABELS_PATH, this)
         detector.setup()
 
         if (allPermissionsGranted()) {

@@ -11,6 +11,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
 import androidx.camera.core.ImageCapture.OutputFileOptions
@@ -27,6 +28,9 @@ import androidx.camera.video.VideoRecordEvent
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.findNavController
 import com.example.drive_buddy.databinding.ActivityCameraBinding
 
 import java.io.File
@@ -68,9 +72,11 @@ class CameraActivity : AppCompatActivity() {
     private var lensFacing = CameraSelector.LENS_FACING_BACK
     private var aspectRatio = AspectRatio.RATIO_16_9
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(mainBinding.root)
+
 
         if (checkMultiplePermission()) {
             startCamera()
@@ -104,6 +110,13 @@ class CameraActivity : AppCompatActivity() {
         mainBinding.flashToggleIB.setOnClickListener {
             setFlashIcon(camera)
         }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val intent = Intent(this, MainActivity2::class.java)
+        startActivity(intent)
+        finish()
     }
 
 
@@ -390,9 +403,7 @@ class CameraActivity : AppCompatActivity() {
     }
 
     private fun captureVideo(){
-
         mainBinding.captureIB.isEnabled = false
-
         mainBinding.flashToggleIB.gone()
         mainBinding.flipCameraIB.gone()
         mainBinding.aspectRatioTxt.gone()
@@ -423,6 +434,7 @@ class CameraActivity : AppCompatActivity() {
             .setContentValues(contentValues)
             .build()
 
+
         recording = videoCapture.output
             .prepareRecording(this, mediaStoreOutputOptions)
             .apply {
@@ -445,13 +457,9 @@ class CameraActivity : AppCompatActivity() {
                             val message = "Video Capture Succeeded: " + "${recordEvent.outputResults.outputUri}"
                             Toast.makeText(
                                 this@CameraActivity,
-                                message,
+                                "Video başarıyla kaydedildi",
                                 Toast.LENGTH_LONG
                             ).show()
-
-                            // Video kaydı tamamlandığında VideoListActivity'e geçiş yap
-                            val intent = Intent(this@CameraActivity, VideoListActivity::class.java)
-                            startActivity(intent)
                             finish()
                         }else{
                             recording?.close()
