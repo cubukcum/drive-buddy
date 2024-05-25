@@ -34,6 +34,12 @@
         android:theme="@style/Theme.CameraUsingCameraX"
         tools:targetApi="31">
         <activity
+            android:name=".onboard5"
+            android:exported="false" />
+        <activity
+            android:name=".OnboardActivity"
+            android:exported="false" />
+        <activity
             android:name=".MevcutKonum"
             android:exported="false" />
         <activity

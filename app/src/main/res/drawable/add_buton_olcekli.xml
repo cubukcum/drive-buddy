@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+<scale  android:drawable="@drawable/add_buton" android:scaleWidth="24dp" android:scaleHeight="24dp" > </scale>
+</selector>

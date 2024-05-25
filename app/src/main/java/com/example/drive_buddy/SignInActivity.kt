@@ -1,9 +1,12 @@
 package com.example.drive_buddy
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.compose.rememberNavController
 import com.example.drive_buddy.databinding.ActivitySignInBinding
 import com.google.firebase.auth.FirebaseAuth
 
@@ -18,41 +21,56 @@ class SignInActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySignInBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-
-        firebaseAuth = FirebaseAuth.getInstance()
-        binding.textView.setOnClickListener {
-            val intent = Intent(this, SignUpActivity::class.java)
-            startActivity(intent)
-        }
-
-        binding.button.setOnClickListener {
-            val email = binding.emailEt.text.toString()
-            val pass = binding.passET.text.toString()
-            if (email.isNotEmpty() && pass.isNotEmpty()) {
-
-                firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        val intent = Intent(this, MainActivity::class.java)
-                        startActivity(intent)
-                    } else {
-                        Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show()
-
-                    }
-                }
-            } else {
-                Toast.makeText(this, "Empty Fields Are not Allowed !!", Toast.LENGTH_SHORT).show()
-
+            firebaseAuth = FirebaseAuth.getInstance()
+            binding.textView.setOnClickListener {
+                val intent = Intent(this, SignUpActivity::class.java)
+                startActivity(intent)
             }
-        }
+
+            binding.button.setOnClickListener {
+                val email = binding.emailEt.text.toString()
+                val pass = binding.passET.text.toString()
+
+                if (email.isNotEmpty() && pass.isNotEmpty()) {
+
+                    firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            val sharedPreferences = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+                            val onboardingCompleted = sharedPreferences.getBoolean("onboarding_completed", false)
+                            print("haydar")
+                            print(onboardingCompleted.toString())
+                            if(firebaseAuth.currentUser != null && !onboardingCompleted){
+                                val intent = Intent(this, OnboardActivity::class.java)
+                                startActivity(intent)
+                                finish()
+                            }
+                            else{
+                                val intent = Intent(this, MainActivity::class.java)
+                                startActivity(intent)
+                            }
+
+
+                        } else {
+                            Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show()
+
+                        }
+                    }
+                } else {
+                    Toast.makeText(this, "Empty Fields Are not Allowed !!", Toast.LENGTH_SHORT).show()
+
+                }
+            }
+
     }
 
     override fun onStart() {
         super.onStart()
 
+
         if(firebaseAuth.currentUser != null){
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
+            finish()
         }
     }
 }
