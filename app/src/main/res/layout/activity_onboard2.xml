@@ -4,9 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/silah">
+    android:background="@drawable/serit_takip"
+    tools:context=".OnboardActivity2">
 
     <TextView
+        android:contextClickable="true"
+
+        android:textStyle="bold"
 
         android:clickable="true"
         android:id="@+id/textViewFinish"
@@ -14,8 +18,8 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="32dp"
-        android:text="Next"
-        android:textColor="@color/black"
+        android:text="next"
+        android:textColor="@color/yellow"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

@@ -58,7 +58,7 @@ class OnboardActivity : AppCompatActivity() {
 
         nextButton.setOnClickListener {
             savePhoneNumbersToFirebase()
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, OnboardActivity1::class.java)
             startActivity(intent)
             finish()
 

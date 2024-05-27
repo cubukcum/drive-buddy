@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/trafik_isaretler"
-    tools:context=".OnboardActivity5">
+    android:background="@drawable/yol_kayit"
+    tools:context=".OnboardActivity6">
 
     <TextView
         android:contextClickable="true"
